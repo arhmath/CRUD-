@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Data Entry App</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Load Poppins font (Menggantikan Inter/Noto Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <!-- Load Material Symbols for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <style>
+        /* Mengatur font Poppins sebagai default */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Konfigurasi ikon Material Symbols */
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 500, /* Ditingkatkan agar lebih tebal */
+            'GRAD' 0,
+            'opsz' 24
+        }
+        
+        /* CSS Kustom untuk menyembunyikan ikon kalender default browser */
+        .date-input-no-calendar::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .date-input-no-calendar {
+            appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        input[type="date"]::-webkit-inner-spin-button, 
+        input[type="date"]::-webkit-clear-button {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+<!-- Full-Width Header (sticky) -->
+<header class="sticky top-0 z-10 w-full border-b border-solid border-b-gray-200 bg-white shadow-lg">
+    <div class="flex items-center justify-between whitespace-nowrap px-4 md:px-10 lg:px-20 max-w-[1200px] mx-auto py-3">
+        <!-- Logo and Title -->
+        <div class="flex items-center gap-4 text-gray-900">
+            <div class="size-6 text-blue-600">
+                <svg fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.38 0 2.5 1.12 2.5 2.5S13.38 10 12 10 9.5 8.88 9.5 7.5 10.62 5 12 5zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+            </div>
+            <h2 class="text-gray-900 text-xl font-bold tracking-tight">Sistem Data Mahasiswa</h2>
+        </div>
+        <!-- Mode Status (Diperbesar) -->
+        <div class="flex flex-1 justify-end items-center gap-4">
+            <span id="mode-status" class="text-sm md:text-base font-semibold px-4 py-2 rounded-full bg-blue-100 text-blue-600 transition-colors duration-300 shadow-md">Mode: Tambah Baru</span>
+        </div>
+    </div>
+</header>
+<!-- End Full-Width Header -->
+
+
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+    <div class="layout-container flex h-full grow flex-col max-w-[1200px] mx-auto w-full">
+        <!-- Main Content Area with padding -->
+        <div class="flex flex-1 justify-center py-8 px-4 md:px-10 lg:px-20">
+            <div class="layout-content-container flex flex-col flex-1">
+
+                <main class="flex-1">
+                    <div class="flex flex-wrap justify-between gap-3 mb-8">
+                        <p class="text-gray-900 text-4xl font-extrabold tracking-tight min-w-72">Input Data Mahasiswa</p>
+                    </div>
+
+                    <!-- Input/Edit Form Card -->
+                    <div class="p-0 @container mb-12">
+                        <div class="flex flex-col items-stretch justify-start rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+                            <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 p-6 border-b border-gray-100">
+                                <p class="text-gray-900 text-xl font-bold tracking-tight" id="form-title">Detail Entri Baru</p>
+                                <p class="text-gray-500 text-base font-medium">Silakan isi detail di bawah untuk menambah atau mengubah data.</p>
+                            </div>
+                            
+                            <form id="dataForm" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <input type="hidden" id="dataId" name="id">
+                                
+                                <!-- Input Nama -->
+                                <div class="flex flex-col">
+                                    <label class="flex flex-col min-w-40 flex-1">
+                                        <p class="text-gray-900 text-base font-semibold pb-2">Nama</p>
+                                        <div class="flex w-full flex-1 items-stretch rounded-lg">
+                                            <input id="inputName" name="nama" required class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-4 focus:ring-blue-500/30 border border-gray-300 bg-white h-12 placeholder:text-gray-400 p-[15px] text-base font-medium transition-shadow" placeholder="Masukkan nama lengkap" value=""/>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Input NIM -->
+                                <div class="flex flex-col">
+                                    <label class="flex flex-col min-w-40 flex-1">
+                                        <p class="text-gray-900 text-base font-semibold pb-2">NIM</p>
+                                        <div class="flex w-full flex-1 items-stretch rounded-lg">
+                                            <input id="inputNIM" name="nim" required class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-4 focus:ring-blue-500/30 border border-gray-300 bg-white h-12 placeholder:text-gray-400 p-[15px] text-base font-medium transition-shadow" placeholder="Masukkan NIM" value=""/>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Input Tanggal Lahir (Dengan Desain Kustom) -->
+                                <div class="flex flex-col">
+                                    <label class="flex flex-col min-w-40 flex-1">
+                                        <p class="text-gray-900 text-base font-semibold pb-2">Tanggal Lahir</p>
+                                        <div class="relative flex w-full flex-1 items-stretch rounded-lg">
+                                            <input id="inputDOB" name="tanggalLahir" required class="date-input-no-calendar form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-4 focus:ring-blue-500/30 border border-gray-300 bg-white h-12 placeholder:text-gray-400 p-[15px] pr-12 text-base font-medium transition-shadow" placeholder="Pilih tanggal" type="date" value=""/>
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-500">
+                                                <span class="material-symbols-outlined text-lg">calendar_month</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Input Alamat -->
+                                <div class="md:col-span-2 flex flex-col">
+                                    <label class="flex flex-col min-w-40 flex-1">
+                                        <p class="text-gray-900 text-base font-semibold pb-2">Alamat</p>
+                                        <div class="flex w-full flex-1 items-stretch rounded-lg">
+                                            <textarea id="inputAddress" name="alamat" required class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-gray-900 focus:outline-0 focus:ring-4 focus:ring-blue-500/30 border border-gray-300 bg-white min-h-[100px] placeholder:text-gray-400 p-[15px] text-base font-medium transition-shadow" placeholder="Masukkan alamat lengkap"></textarea>
+                                        </div>
+                                    </label>
+                                </div>
+                            </form>
+                            
+                            <!-- Tombol Aksi -->
+                            <div class="flex justify-end gap-4 p-6 border-t border-gray-100">
+                                <button onclick="resetForm()" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-gray-200 text-gray-700 gap-2 text-base font-semibold min-w-[120px] px-6 hover:bg-gray-300 transition-colors">
+                                    Batal / Reset
+                                </button>
+                                <button id="submitButton" onclick="submitData()" class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-blue-600 text-white gap-2 text-base font-bold min-w-[120px] px-6 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/50">
+                                    <span id="submitText">Tambah Data</span>
+                                    <span id="loadingIndicator" class="hidden animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Input/Edit Form Card -->
+
+                    <!-- Data Table -->
+                    <div class="flex flex-wrap justify-between gap-3 mb-4 mt-8">
+                        <p class="text-gray-900 text-3xl font-extrabold tracking-tight min-w-72">Daftar Data Mahasiswa</p>
+                    </div>
+                    
+                    <div class="p-0 @container overflow-x-auto">
+                        <div class="rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-blue-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">NIM</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tanggal Lahir</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Alamat</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTableBody" class="bg-white divide-y divide-gray-100">
+                                    <!-- Data rows will be injected here by JavaScript -->
+                                </tbody>
+                            </table>
+                            <div id="emptyMessage" class="hidden text-center py-6 text-gray-500 font-medium">Belum ada data mahasiswa. Silakan tambahkan entri baru.</div>
+                        </div>
+                    </div>
+                    <!-- End Data Table -->
+
+                    <!-- Custom Alert/Modal for confirmation/messages -->
+                    <div id="customAlert" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+                        <div class="bg-white p-8 rounded-xl shadow-[0_15px_30px_rgba(0,0,0,0.3)] max-w-sm w-11/12 transform scale-100 transition-all duration-300 border-t-4 border-blue-600">
+                            <h3 class="text-2xl font-bold mb-4 text-blue-800" id="alertTitle">Pesan</h3>
+                            <p class="text-gray-600 mb-8 text-base font-medium" id="alertMessage"></p>
+                            <div class="flex justify-end space-x-3" id="alertActions">
+                                <!-- Buttons will be placed here by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // URL endpoint PHP kita
+    const API_URL = 'api.php';
+    let isEditMode = false;
+    let currentId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchData();
+    });
+
+    // Helper function untuk menampilkan pesan/modal
+    function showAlert(title, message, isConfirmation = false, onConfirm = null) {
+        document.getElementById('alertTitle').textContent = title;
+        document.getElementById('alertMessage').innerHTML = message;
+        
+        const actions = document.getElementById('alertActions');
+        actions.innerHTML = '';
+        
+        if (isConfirmation) {
+            const cancelButton = document.createElement('button');
+            cancelButton.onclick = closeAlert;
+            // Desain tombol Batal
+            cancelButton.className = 'px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors';
+            cancelButton.textContent = 'Batal';
+
+            const confirmButton = document.createElement('button');
+            confirmButton.onclick = () => { closeAlert(); onConfirm(); };
+            // Desain tombol Ya, Hapus
+            confirmButton.className = 'px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-500/30';
+            confirmButton.textContent = 'Ya, Hapus';
+
+            actions.appendChild(cancelButton);
+            actions.appendChild(confirmButton);
+        } else {
+            const closeButton = document.createElement('button');
+            closeButton.onclick = closeAlert;
+            // Desain tombol OK
+            closeButton.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30';
+            closeButton.textContent = 'OK';
+            actions.appendChild(closeButton);
+        }
+
+        document.getElementById('customAlert').classList.remove('hidden');
+    }
+
+    function closeAlert() {
+        document.getElementById('customAlert').classList.add('hidden');
+    }
+
+    // Fungsi untuk menampilkan indikator loading
+    function toggleLoading(isLoading) {
+        document.getElementById('submitButton').disabled = isLoading;
+        document.getElementById('submitText').classList.toggle('hidden', isLoading);
+        document.getElementById('loadingIndicator').classList.toggle('hidden', !isLoading);
+    }
+
+    // Fungsi untuk mengambil data (Read)
+    async function fetchData() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            renderTable(data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            showAlert('Kesalahan Koneksi', 'Gagal mengambil data dari server PHP. Pastikan file **api.php** ada dan berfungsi.');
+        }
+    }
+
+    // Fungsi untuk merender tabel data
+    function renderTable(data) {
+        const tableBody = document.getElementById('dataTableBody');
+        const emptyMessage = document.getElementById('emptyMessage');
+        tableBody.innerHTML = '';
+
+        if (data && data.length > 0) {
+            data.forEach(item => {
+                const row = tableBody.insertRow();
+                row.className = 'hover:bg-blue-50 transition duration-150';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.nama}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.nim}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.tanggalLahir}</td>
+                    <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${item.alamat}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
+                        <button onclick="editData('${item.id}', '${item.nama}', '${item.nim}', '${item.tanggalLahir}', '${item.alamat.replace(/'/g, "\\'")}')" class="text-indigo-600 hover:text-white bg-indigo-100 p-2 rounded-full transition duration-150 hover:bg-indigo-600 shadow-md" title="Edit Data">
+                            <span class="material-symbols-outlined text-base">edit</span>
+                        </button>
+                        <button onclick="confirmDelete('${item.id}', '${item.nama.replace(/'/g, "\\'")}')" class="text-red-600 hover:text-white bg-red-100 p-2 rounded-full transition duration-150 hover:bg-red-600 shadow-md" title="Hapus Data">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                        </button>
+                    </td>
+                `;
+            });
+            emptyMessage.classList.add('hidden');
+        } else {
+            emptyMessage.classList.remove('hidden');
+        }
+    }
+
+    // Fungsi untuk mengisi form saat mode Edit diaktifkan
+    function editData(id, nama, nim, tanggalLahir, alamat) {
+        isEditMode = true;
+        currentId = id;
+        
+        document.getElementById('dataId').value = id;
+        document.getElementById('inputName').value = nama;
+        document.getElementById('inputNIM').value = nim;
+        document.getElementById('inputDOB').value = tanggalLahir;
+        document.getElementById('inputAddress').value = alamat;
+
+        // Perbarui UI
+        document.getElementById('form-title').textContent = 'Edit Entri Data';
+        document.getElementById('submitText').textContent = 'Simpan Perubahan';
+        
+        const modeStatus = document.getElementById('mode-status');
+        modeStatus.textContent = 'Mode: Edit Data';
+        modeStatus.classList.remove('bg-blue-100', 'text-blue-600');
+        modeStatus.classList.add('bg-yellow-100', 'text-yellow-600');
+        
+        // Scroll ke atas ke form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Fungsi untuk submit data (Create/Update)
+    async function submitData() {
+        const form = document.getElementById('dataForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        toggleLoading(true);
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Tentukan aksi: 'create' atau 'update'
+        const action = isEditMode ? 'update' : 'create';
+        data.action = action;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Sukses!', isEditMode ? 'Data Berhasil diperbarui.' : 'Data baru Berhasil ditambahkan.');
+                resetForm();
+                fetchData(); // Muat ulang data
+            } else {
+                showAlert('Gagal!', 'Terjadi kesalahan saat menyimpan data: ' + (result.message || 'Unknown error.'));
+            }
+        } catch (error) {
+            console.error('Error submitting data:', error);
+            showAlert('Kesalahan Jaringan', 'Gagal berkomunikasi dengan server PHP.');
+        } finally {
+            toggleLoading(false);
+        }
+    }
+    
+    // Fungsi untuk mereset form dan kembali ke mode Tambah
+    function resetForm() {
+        isEditMode = false;
+        currentId = null;
+        document.getElementById('dataForm').reset();
+        document.getElementById('dataId').value = '';
+
+        // Perbarui UI
+        document.getElementById('form-title').textContent = 'Detail Entri Baru';
+        document.getElementById('submitText').textContent = 'Tambah Data';
+        
+        const modeStatus = document.getElementById('mode-status');
+        modeStatus.textContent = 'Mode: Tambah Baru';
+        modeStatus.classList.remove('bg-yellow-100', 'text-yellow-600');
+        modeStatus.classList.add('bg-blue-100', 'text-blue-600');
+    }
+
+    // Fungsi untuk konfirmasi Delete
+    function confirmDelete(id, nama) {
+        showAlert(
+            'Konfirmasi Hapus', 
+            `Anda yakin ingin menghapus data ${nama}? Aksi ini tidak dapat dibatalkan.`, 
+            true, 
+            () => deleteData(id) // Callback jika user konfirmasi
+        );
+    }
+
+    // Fungsi untuk menghapus data (Delete)
+    async function deleteData(id) {
+        toggleLoading(true);
+        const data = {
+            action: 'delete',
+            id: id
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('Data Terhapus!', 'Data mahasiswa **berhasil dihapus**.');
+                fetchData(); // Muat ulang data
+                // Pastikan form direset jika data yang sedang diedit dihapus
+                if (currentId === id) {
+                    resetForm();
+                }
+            } else {
+                showAlert('Gagal Hapus!', 'Terjadi kesalahan saat menghapus data: ' + (result.message || 'Unknown error.'));
+            }
+        } catch (error) {
+            console.error('Error deleting data:', error);
+            showAlert('Kesalahan Jaringan', 'Gagal berkomunikasi dengan server PHP untuk menghapus data.');
+        } finally {
+            toggleLoading(false);
+        }
+    }
+</script>
+
+</body>
+</html>
